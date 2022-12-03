@@ -14,6 +14,7 @@ import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
 
+import static Bot.Anecdotes.sayJoke;
 import static Bot.Parser.parse;
 
 public class Bot extends TelegramLongPollingBot {
@@ -50,6 +51,8 @@ public class Bot extends TelegramLongPollingBot {
                 case ("Расписание"):
                     sendMsg(message, parse());
                     break;
+                case ("Анекдот"):
+                    sendMsg(message,sayJoke());
                 default:
             }
         }
