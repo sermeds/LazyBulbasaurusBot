@@ -1,6 +1,10 @@
 package Bot;
 
-public class Lesson {
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+public class Lesson implements Sendable{
     private String room;
     private String name;
     private String type;
@@ -54,5 +58,10 @@ public class Lesson {
                 + Icon.BOOKS.get() + name + ' '
                 + type + '\n'
                 + Icon.TEACHER.get() + teacher;
+    }
+
+    @Override
+    public String safeTextForm() {
+        return this.toString();
     }
 }
