@@ -3,7 +3,7 @@ package Bot;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 public class Anecdotes {
@@ -23,7 +23,7 @@ public class Anecdotes {
                     .build();
             response = okHttpClient.newCall(request).execute();
             String data = response.body().string();
-            // jsonObject = (JSONObject)parser.parse(data);
+            jsonObject = (JSONObject)parser.parse(data);
 
             JSONObject jokejsonobject = (JSONObject)parser.parse(data);
             sendJoke = jokejsonobject.get("setup") + "\n\n" + jokejsonobject.get("punchline");
