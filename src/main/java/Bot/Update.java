@@ -30,7 +30,7 @@ public class Update {
 
     public static void parseHtml() throws IOException {
         deleteOld();
-        Document document = Jsoup.connect("https://rasp.sstu.ru/").get();
+        Document document =  Jsoup.connect("https://rasp.sstu.ru/").get();
         Elements elements = document.select("a");
         for (Element element : elements) {
             System.out.println(element.attr("abs:href"));
