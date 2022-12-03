@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,6 +30,7 @@ public class Bot extends TelegramLongPollingBot {
         try {
             TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
             telegramBotsApi.registerBot(new Bot());
+            stipendia();
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
@@ -80,7 +82,13 @@ public class Bot extends TelegramLongPollingBot {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                default:
+            case ("стипендия"):
+            case ("стипуха"):
+                sendMsg(message, "До стипендии осталось " + stipendia());
+                break;
+            default:
+                sendMsg(message, "Эм, не понял");
+                break;
         }
     }
 
@@ -112,6 +120,24 @@ public class Bot extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+    }
+
+    public static String stipendia() {
+        LocalDateTime now = LocalDateTime.now().withDayOfMonth(15);
+        LocalDateTime payDay = now.withDayOfMonth(25);
+        if (payDay.getDayOfWeek().getValue() > 5) payDay = payDay.minusDays(payDay.getDayOfWeek().getValue() - 5);
+        long diff = ChronoUnit.DAYS.between(now, payDay);
+        if (diff <= 0) {
+            if (payDay.getMonthValue() + 1 > 12) payDay = payDay.withMonth(1).withYear(payDay.getYear() + 1);
+            else payDay = payDay.withMonth(payDay.getMonthValue() + 1);
+        }
+        diff = ChronoUnit.DAYS.between(now, payDay);
+        String str = Long.toString(diff);
+        if (diff % 10 == 1 && diff % 100 != 1) str += " день";
+        else if ((diff % 10 == 2 || diff % 10 == 3 || diff % 10 == 4) && (diff % 100 != 1)) str += " дня";
+        else str += " дней";
+        return str;
+
     }
 
 }
