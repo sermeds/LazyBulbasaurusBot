@@ -1,3 +1,5 @@
+package Bot;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -32,13 +34,13 @@ public class Update {
         Elements elements = document.select("a");
         for (Element element : elements) {
             System.out.println(element.attr("abs:href"));
-            downloadFile(element.attr("abs:href"), Paths.get("D:\\!TGBOT"));
+            downloadFile(element.attr("abs:href"), Paths.get("C:\\!TGBOT"));
         }
         timeUp = new Date().toString();
     }
 
     public static void deleteOld() {
-        File file = new File("D:\\!TGBOT");
+        File file = new File("C:\\!TGBOT");
         if (file.length() != 0) {
             for (File file1 : file.listFiles()) {
                 file1.delete();
