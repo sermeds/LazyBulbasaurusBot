@@ -17,7 +17,8 @@ public enum Icon {
     OFFICE(":office:"),
     SUN(":sunny:"),
     DROP(":droplet:"),
-    CALENDAR(":calendar:");
+    CALENDAR(":calendar:"),
+    DOLLAR(":dollar:");
 
     private String value;
 
