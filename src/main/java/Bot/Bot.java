@@ -123,7 +123,7 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     public static String stipendia() {
-        LocalDateTime now = LocalDateTime.now().withDayOfMonth(15);
+        LocalDateTime now = LocalDateTime.now();
         LocalDateTime payDay = now.withDayOfMonth(25);
         if (payDay.getDayOfWeek().getValue() > 5) payDay = payDay.minusDays(payDay.getDayOfWeek().getValue() - 5);
         long diff = ChronoUnit.DAYS.between(now, payDay);
