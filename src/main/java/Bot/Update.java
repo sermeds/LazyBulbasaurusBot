@@ -22,7 +22,7 @@ public class Update {
     public static String timeUp = "0";
 
     public static void timer() throws IOException {
-        Calendar calendarTimer = new GregorianCalendar();
+        Calendar calendarTimer = new  GregorianCalendar();
         if (calendarTimer.get(Calendar.HOUR_OF_DAY) == 9 && calendarTimer.get(Calendar.MINUTE) == 0 && calendarTimer.get(Calendar.SECOND) == 0) {
             parseHtml();
         }
