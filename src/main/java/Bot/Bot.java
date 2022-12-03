@@ -7,8 +7,8 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
-
 import javax.xml.soap.MessageFactory;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -46,11 +46,13 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
+
         message = update.getMessage();
         if (message != null && message.hasText()) registerMessage();
     }
 
     public void registerMessage() {
+        WeatherModel model = new WeatherModel();
         List<String> lst = new ArrayList<>(Arrays.asList(message.getText().split(" ")));
         if (groupMessage) {
             lst.add(0, "расписание");
@@ -73,7 +75,13 @@ public class Bot extends TelegramLongPollingBot {
             case ("анекдот"):
                 sendMsg(message, sayJoke());
                 break;
-            default:
+            case ("Погода"):
+                    try {
+                        sendMsg(message, Weather.getWeather(model));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                default:
         }
     }
 

@@ -49,10 +49,10 @@ public class Lesson {
 
     @Override
     public String toString() {
-        return time + '\n'
-                + room + '\n'
-                + name + ' '
+        return Icon.CALENDAR.get() + time + '\n'
+                + Icon.PLACE.get() + room + '\n'
+                + Icon.BOOKS.get() + name + ' '
                 + type + '\n'
-                + teacher;
+                + Icon.TEACHER.get() + teacher;
     }
 }
