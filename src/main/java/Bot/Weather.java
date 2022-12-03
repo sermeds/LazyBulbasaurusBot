@@ -28,8 +28,8 @@ public class Weather {
         model.setTemp(main.getDouble("temp"));
         model.setHumidity(main.getDouble("humidity"));
 
-        return " Город: " + model.getName() + "\n" +
-                " Температура: " + model.getTemp() + "C" + "\n" +
+        return "Город: " + model.getName() + "\n" +
+                "Температура: " + model.getTemp() + "C" + "\n" +
                 "Влажность:" + model.getHumidity() + "%" + "\n";
     }
 }
