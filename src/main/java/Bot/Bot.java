@@ -8,16 +8,22 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
+import javax.xml.soap.MessageFactory;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import static Bot.Anecdotes.sayJoke;
 import static Bot.Parser.parse;
 
 public class Bot extends TelegramLongPollingBot {
+    private boolean groupMessage = false;
+    private Message message;
+
     public static void main(String[] args) {
         try {
             TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
@@ -39,22 +45,34 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        Message message = update.getMessage();
-        if (message != null && message.hasText()) {
-            switch (message.getText()) {
-                case ("/help"):
-                    sendMsg(message, "Чем могу помочь?");
-                    break;
-                case ("/start"):
-                    sendMsg(message, "Привествую");
-                    break;
-                case ("Расписание"):
-                    sendMsg(message, parse());
-                    break;
-                case ("Анекдот"):
-                    sendMsg(message,sayJoke());
-                default:
-            }
+        message = update.getMessage();
+        System.out.println(message.getText());
+        if (message != null && message.hasText()) registerMessage();
+    }
+
+    public void registerMessage() {
+        List<String> lst = Arrays.asList(message.getText().split(" "));
+        if (groupMessage) {
+            lst.add(0, "расписание");
+            groupMessage = false;
+        }
+        switch (lst.get(0).toLowerCase(Locale.ROOT)) {
+            case (("/help")):
+                sendMsg(message, "Чем могу помочь?");
+                break;
+            case ("/start"):
+                sendMsg(message, "Привествую");
+                break;
+            case ("расписание"):
+                if (lst.size() > 1) sendMsg(message, parse(lst.get(1)));
+                else {
+                    sendMsg(message, "Расписание какой группы хотите увидеть?");
+                    groupMessage = true;
+                }
+                break;
+            case ("анекдот"):
+                sendMsg(message, sayJoke());
+            default:
         }
     }
 
@@ -87,4 +105,5 @@ public class Bot extends TelegramLongPollingBot {
             e.printStackTrace();
         }
     }
+
 }
