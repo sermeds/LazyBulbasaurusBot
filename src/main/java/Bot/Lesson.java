@@ -1,10 +1,6 @@
 package Bot;
 
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
-public class Lesson implements Sendable{
+public class Lesson implements Textable {
     private String room;
     private String name;
     private String type;

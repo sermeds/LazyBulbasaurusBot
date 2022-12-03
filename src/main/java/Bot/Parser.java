@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Parser {
-    public static List<Sendable> parse(String nameGroup) {
+    public static List<Textable> parse(String nameGroup) {
         Document doc1 = null;
-        List<Sendable> lessons = new ArrayList<>();
+        List<Textable> lessons = new ArrayList<>();
         try {
             doc1 = Jsoup.connect("https://rasp.sstu.ru/rasp/").get();
             Elements el1 = doc1.getElementsByClass("group");

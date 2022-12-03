@@ -101,7 +101,7 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
-    public void sendMsg(Message message, List<Sendable> lessons) {
+    public void sendMsg(Message message, List<Textable> lessons) {
         if ("!".equals(lessons.get(0).safeTextForm().substring(0,1))) {
             sendMsg(message, lessons.get(0).safeTextForm().substring(1));
             return;
@@ -118,7 +118,7 @@ public class Bot extends TelegramLongPollingBot {
                 sendMsg(message, "Сегодня у вас выходной");
                 return;
             }
-            for (Sendable l : lessons) {
+            for (Textable l : lessons) {
                 sendMessage.setText(l.safeTextForm());
                 execute(sendMessage);
             }
