@@ -12,6 +12,7 @@ import javax.xml.soap.MessageFactory;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -46,12 +47,11 @@ public class Bot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         message = update.getMessage();
-        System.out.println(message.getText());
         if (message != null && message.hasText()) registerMessage();
     }
 
     public void registerMessage() {
-        List<String> lst = Arrays.asList(message.getText().split(" "));
+        List<String> lst = new ArrayList<>(Arrays.asList(message.getText().split(" ")));
         if (groupMessage) {
             lst.add(0, "расписание");
             groupMessage = false;
@@ -72,6 +72,7 @@ public class Bot extends TelegramLongPollingBot {
                 break;
             case ("анекдот"):
                 sendMsg(message, sayJoke());
+                break;
             default:
         }
     }
