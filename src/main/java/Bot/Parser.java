@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Parser {
-    public static List<Lesson> parse(){
+    public static List<Lesson> parse() {
         Document doc = null;
         List<Lesson> lessons = new ArrayList<>();
         try {
