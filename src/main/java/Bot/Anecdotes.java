@@ -23,7 +23,6 @@ public class Anecdotes {
                     .build();
             response = okHttpClient.newCall(request).execute();
             String data = response.body().string();
-            jsonObject = (JSONObject)parser.parse(data);
 
             JSONObject jokejsonobject = (JSONObject)parser.parse(data);
             sendJoke = jokejsonobject.get("setup") + "\n\n" + jokejsonobject.get("punchline");
