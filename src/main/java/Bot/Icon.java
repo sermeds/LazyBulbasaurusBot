@@ -11,9 +11,13 @@ public enum Icon {
     FLAG(":checkered_flag:"),
     TEACHER(":man_teacher:"),
     BOOKS(":books:"),
-    CALENDAR(":alarm_clock:"),
+    CLOCK(":alarm_clock:"),
     PLACE(":house:"),
-    HI(":wave:");
+    HI(":wave:"),
+    OFFICE(":office:"),
+    SUN(":sunny:"),
+    DROP(":droplet:"),
+    CALENDAR(":calendar:");
 
     private String value;
 
@@ -24,4 +28,4 @@ public enum Icon {
     Icon(String value) {
         this.value = value;
     }
-    }
+}
