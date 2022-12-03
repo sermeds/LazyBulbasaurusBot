@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -39,6 +40,7 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
+        WeatherModel model = new WeatherModel();
         Message message = update.getMessage();
         if (message != null && message.hasText()) {
             switch (message.getText()) {
@@ -46,13 +48,19 @@ public class Bot extends TelegramLongPollingBot {
                     sendMsg(message, "Чем могу помочь?");
                     break;
                 case ("/start"):
-                    sendMsg(message, "Привествую");
+                    sendMsg(message, "Привествую " + Icon.HI.get());
                     break;
                 case ("Расписание"):
                     sendMsg(message, parse());
                     break;
                 case ("Анекдот"):
-                    sendMsg(message,sayJoke());
+                    sendMsg(message, sayJoke());
+                case ("Погода"):
+                    try {
+                        sendMsg(message, Weather.getWeather(model));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 default:
             }
         }
