@@ -9,9 +9,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 public class Quote extends Expression {
 
     public String create() {
-        System.out.println("12");
+        System.setProperty("webdriver.chrome.driver","selenium\\chromedriver.exe");
         WebDriver webDriver = new ChromeDriver();
-        System.out.println("34");
         webDriver.get("https://randstuff.ru/saying/");
         text = null;
         try {
