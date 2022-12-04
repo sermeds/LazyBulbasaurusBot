@@ -86,13 +86,22 @@ public class Bot extends TelegramLongPollingBot {
                 sendMsg(message, Icon.DOLLAR.get() + " До стипендии осталось " + scholarship() + ' ' + Icon.DOLLAR.get());
                 break;
             case ("совет"):
-                sendMsg(message, new Advice().send() + "");
+                sendMsg(message,  new Advice().send() + "");
                 break;
             case ("цитата"):
                 sendMsg(message, new Quote().send() + "");
                 break;
             case ("факт"):
                 sendMsg(message, new Fact().send() + "");
+                break;
+            case ("создать_заметку"):
+                sendMsg(message,  new Notes().createNote(message.getChatId(),"Иди учись") + "");
+                break;
+            case ("заметка"):
+                sendMsg(message,  new Notes().getNote(message.getChatId()) + "");
+                break;
+            case ("удалить_заметку"):
+                sendMsg(message,  new Notes().removeNote(message.getChatId()) + "");
                 break;
             default:
                 sendMsg(message, "Эм, не понял");
