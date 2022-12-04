@@ -84,6 +84,12 @@ public class Bot extends TelegramLongPollingBot {
             case ("стипуха"):
                 sendMsg(message, Icon.DOLLAR.get() + " До стипендии осталось " + scholarship() + ' ' + Icon.DOLLAR.get());
                 break;
+            case ("совет"):
+
+                break;
+            case ("цитата"):
+
+                break;
             default:
                 sendMsg(message, "Эм, не понял");
                 break;

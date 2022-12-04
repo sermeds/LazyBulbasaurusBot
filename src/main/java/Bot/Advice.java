@@ -1,4 +1,5 @@
 package Bot;
 
-public class Advice {
+public class Advice extends Expression {
+
 }
