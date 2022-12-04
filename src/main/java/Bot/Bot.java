@@ -79,6 +79,7 @@ public class Bot extends TelegramLongPollingBot {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+                break;
             case ("стипендия"):
             case ("стипуха"):
                 sendMsg(message, Icon.DOLLAR.get() + " До стипендии осталось " + scholarship() + ' ' + Icon.DOLLAR.get());
