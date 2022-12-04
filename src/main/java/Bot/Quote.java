@@ -9,7 +9,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 public class Quote extends Expression {
 
     public String create() {
-        System.setProperty("webdriver.chrome.driver","selenium\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver","C:\\Users\\proba\\Downloads\\!Учеба\\!Профильные\\ООП\\LazyBulbasaurusBot\\selenium\\chromedriver.exe");
         WebDriver webDriver = new ChromeDriver();
         webDriver.get("https://randstuff.ru/saying/");
         text = null;
@@ -17,9 +17,8 @@ public class Quote extends Expression {
 
             WebElement button = webDriver.findElement(By.xpath("//*[@id=\"button\"]"));
             button.click();
-            WebElement quote = webDriver.findElement(By.xpath("//*[@id=\"saying\"]/table/tbody/tr/td/text()"));
-            WebElement author = webDriver.findElement(By.xpath("//*[@id=\"saying\"]/table/tbody/tr/td/span"));
-            text = quote.getText() + "\n" + author.getText();
+            WebElement quote = webDriver.findElement(By.xpath("//*[@id=\"saying\"]/table/tbody/tr/td"));
+            text = quote.getText();
         }
         catch (Exception e) {
             e.printStackTrace();
