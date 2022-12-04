@@ -7,7 +7,6 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
-import javax.xml.soap.MessageFactory;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -17,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 import static Bot.Anecdotes.sayJoke;
 import static Bot.Parser.parse;
@@ -30,7 +28,6 @@ public class Bot extends TelegramLongPollingBot {
         try {
             TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
             telegramBotsApi.registerBot(new Bot());
-            stipendia();
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
@@ -77,14 +74,15 @@ public class Bot extends TelegramLongPollingBot {
                 sendMsg(message, sayJoke());
                 break;
             case ("погода"):
-                    try {
-                        sendMsg(message, Weather.getWeather(model));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                try {
+                    sendMsg(message, Weather.getWeather(model));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
             case ("стипендия"):
             case ("стипуха"):
-                sendMsg(message, Icon.DOLLAR.get() + " До стипендии осталось " + stipendia() + ' ' + Icon.DOLLAR.get());
+                sendMsg(message, Icon.DOLLAR.get() + " До стипендии осталось " + scholarship() + ' ' + Icon.DOLLAR.get());
                 break;
             default:
                 sendMsg(message, "Эм, не понял");
@@ -104,7 +102,11 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
-    public void sendMsg(Message message, List<Lesson> lessons) {
+    public void sendMsg(Message message, List<Textable> lessons) {
+        if ("!".equals(lessons.get(0).safeTextForm().substring(0,1))) {
+            sendMsg(message, lessons.get(0).safeTextForm().substring(1));
+            return;
+        }
         String str = LocalDateTime.now().getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("ru", "RU"));
         String str2 = Icon.CALENDAR.get() + ' ' + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM")) + ' ' + str.substring(0, 1).toUpperCase() + str.substring(1);
         SendMessage sendMessage = new SendMessage();
@@ -113,8 +115,12 @@ public class Bot extends TelegramLongPollingBot {
         try {
             sendMessage.setText(str2);
             execute(sendMessage);
-            for (Lesson l : lessons) {
-                sendMessage.setText(l.toString());
+            if (lessons.size() == 0) {
+                sendMsg(message, "Сегодня у вас выходной");
+                return;
+            }
+            for (Textable l : lessons) {
+                sendMessage.setText(l.safeTextForm());
                 execute(sendMessage);
             }
         } catch (TelegramApiException e) {
@@ -122,7 +128,7 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
-    public static String stipendia() {
+    public static String scholarship() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime payDay = now.withDayOfMonth(25);
         if (payDay.getDayOfWeek().getValue() > 5) payDay = payDay.minusDays(payDay.getDayOfWeek().getValue() - 5);

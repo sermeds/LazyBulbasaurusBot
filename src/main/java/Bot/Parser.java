@@ -5,15 +5,14 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import javax.print.Doc;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Parser {
-    public static List<Lesson> parse(String nameGroup) {
+    public static List<Textable> parse(String nameGroup) {
         Document doc1 = null;
-        List<Lesson> lessons = new ArrayList<>();
+        List<Textable> lessons = new ArrayList<>();
         try {
             doc1 = Jsoup.connect("https://rasp.sstu.ru/rasp/").get();
             Elements el1 = doc1.getElementsByClass("group");
@@ -23,10 +22,16 @@ public class Parser {
                     url = el.child(0).absUrl("href");
                 }
             }
-            if (url == null) throw new RuntimeException("Группа не найдена");
+            if (url == null){
+                lessons.add(()->"!Группа не найдена");
+                return lessons;
+            }
             Document doc2 = Jsoup.connect(url).get();
             Elements element = doc2.getElementsByClass("day-current");
-            if (element.size() == 0) throw new RuntimeException("Расписание не найдено");
+            if (element.size() == 0) {
+                lessons.add(()->"!Расписание не найдено");
+                return lessons;
+            }
             Element el = null;
             for (int i = 1; i <= element.first().childrenSize() - 1; i++) {
                 el = element.first().child(i);

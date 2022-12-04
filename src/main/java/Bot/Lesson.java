@@ -1,6 +1,6 @@
 package Bot;
 
-public class Lesson {
+public class Lesson implements Textable {
     private String room;
     private String name;
     private String type;
@@ -54,5 +54,10 @@ public class Lesson {
                 + Icon.BOOKS.get() + name + ' '
                 + type + '\n'
                 + Icon.TEACHER.get() + teacher;
+    }
+
+    @Override
+    public String safeTextForm() {
+        return this.toString();
     }
 }
