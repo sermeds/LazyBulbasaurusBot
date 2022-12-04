@@ -6,15 +6,15 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
 
-public class Quote extends Expression {
+public class Fact extends Expression {
 
     public String create() {
         System.setProperty("webdriver.chrome.driver","selenium\\chromedriver.exe");
         WebDriver webDriver = new ChromeDriver();
-        webDriver.get("https://randstuff.ru/saying/");
+        webDriver.get("https://randstuff.ru/fact/fav/");
         text = null;
         try {
-            WebElement quote = webDriver.findElement(By.xpath("//*[@id=\"saying\"]/table/tbody/tr/td"));
+            WebElement quote = webDriver.findElement(By.xpath("//*[@id=\"fact\"]/table/tbody/tr/td"));
             text = quote.getText();
             webDriver.quit();
         }
