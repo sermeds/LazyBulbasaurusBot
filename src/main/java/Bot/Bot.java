@@ -95,7 +95,7 @@ public class Bot extends TelegramLongPollingBot {
                 sendMsg(message, new Fact().send() + "");
                 break;
             case ("создать_заметку"):
-                sendMsg(message,  new Notes().createNote(message.getChatId(),"Иди учись") + "");
+                sendMsg(message,  new Notes().createNote(message.getChatId(),"Иди учись!") + "");
                 break;
             case ("заметка"):
                 sendMsg(message,  new Notes().getNote(message.getChatId()) + "");
