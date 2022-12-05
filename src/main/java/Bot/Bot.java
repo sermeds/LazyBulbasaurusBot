@@ -12,10 +12,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 import static Bot.Anecdotes.sayJoke;
 import static Bot.Parser.parse;
@@ -105,6 +102,10 @@ public class Bot extends TelegramLongPollingBot {
                     sendMsg(message,  new Notes().removeNote(message.getChatId()) + "");
                 else sendMsg(message, "Эм, не понял");
                 break;
+            case ("выражение"):
+                Expression expression = randomExpression();
+                sendMsg(message,  expression.send() + "");
+                break;
             case ("совет"):
                 sendMsg(message,  new Advice().send() + "");
                 break;
@@ -174,6 +175,15 @@ public class Bot extends TelegramLongPollingBot {
         else str += " дней";
         return str;
 
+    }
+
+    public static Expression randomExpression() {
+        Random random = new Random();
+        int i = random.nextInt(3);
+        System.out.println(i);
+        if (i == 0) return new Advice();
+        else if (i == 1) return new Quote();
+        else return new Fact();
     }
 
 }

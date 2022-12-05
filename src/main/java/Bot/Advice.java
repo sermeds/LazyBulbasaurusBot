@@ -14,6 +14,7 @@ public class Advice extends Expression {
         webDriver.get("https://generatom.com/custom/generator_sovetov");
         text = null;
         try {
+            Thread.sleep(1000);
             WebElement button = webDriver.findElement(By.xpath("//*[@id=\"generate\"]"));
             button.click();
             Thread.sleep(1000);
