@@ -11,7 +11,7 @@ public class Fact extends Expression {
     public String create() {
         System.setProperty("webdriver.chrome.driver","selenium\\chromedriver.exe");
         WebDriver webDriver = new ChromeDriver();
-        webDriver.get("https://randstuff.ru/fact/fav/");
+        webDriver.get("https://randstuff.ru/fact/");
         text = null;
         try {
             WebElement quote = webDriver.findElement(By.xpath("//*[@id=\"fact\"]/table/tbody/tr/td"));

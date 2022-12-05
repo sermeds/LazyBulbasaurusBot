@@ -7,15 +7,13 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 import static Bot.Anecdotes.sayJoke;
 import static Bot.Parser.parse;
@@ -86,33 +84,61 @@ public class Bot extends TelegramLongPollingBot {
                 sendMsg(message, Icon.DOLLAR.get() + " До стипендии осталось " + scholarship() + ' ' + Icon.DOLLAR.get());
                 break;
             case ("заметка"):
-                sendMsg(message,  new Notes().getNote(message.getChatId()) + "");
+                sendMsg(message, new Notes().getNote(message.getChatId()) + "");
                 break;
             case ("создать"):
-                if(lst.size() > 1 && lst.get(1).equals("заметку")) {
-                    if(lst.size() > 2) {
+                if (lst.size() > 1 && lst.get(1).equals("заметку")) {
+                    if (lst.size() > 2) {
                         StringBuilder noteText = new StringBuilder(lst.get(2));
                         for (int i = 3; i < lst.size(); i++) noteText.append(" ").append(lst.get(i));
                         sendMsg(message, new Notes().createNote(message.getChatId(), noteText.toString()) + "");
                         break;
-                    }
-                    else sendMsg(message, "Заметка не может быть пустой");
-                }
-                else sendMsg(message, "Эм, не понял");
+                    } else sendMsg(message, "Заметка не может быть пустой");
+                } else sendMsg(message, "Эм, не понял");
                 break;
             case ("удалить"):
-                if(lst.size() > 1 && lst.get(1).equals("заметку"))
-                    sendMsg(message,  new Notes().removeNote(message.getChatId()) + "");
+                if (lst.size() > 1 && lst.get(1).equals("заметку"))
+                    sendMsg(message, new Notes().removeNote(message.getChatId()) + "");
                 else sendMsg(message, "Эм, не понял");
                 break;
+            case ("выражение"):
+                Expression expression = randomExpression();
+                sendMsg(message, expression.send() + "");
+                break;
             case ("совет"):
-                sendMsg(message,  new Advice().send() + "");
+                sendMsg(message, new Advice().send() + "");
                 break;
             case ("цитата"):
                 sendMsg(message, new Quote().send() + "");
                 break;
             case ("факт"):
+                System.out.println(message.getFrom().getId());
                 sendMsg(message, new Fact().send() + "");
+                break;
+            case ("/report"):
+                if (lst.size() > 1) {
+                    StringBuilder noteText = new StringBuilder(lst.get(1));
+                    for (int i = 2; i < lst.size(); i++) noteText.append(" ").append(lst.get(i));
+                    sendMsg("1984385382", noteText + "");
+                    sendMsg("841196670", noteText + "");
+                    sendMsg("456755500", noteText + "");
+                    sendMsg(message, "Репорт доставлен");
+                    break;
+                } else sendMsg(message, "Жалоба не может быть пустой");
+                break;
+            case ("/pm"):
+                if (lst.size() > 1) {
+                    String id_user = lst.get(1);
+                    if (lst.size() > 2) {
+                        StringBuilder noteText = new StringBuilder(lst.get(2));
+                        for (int i = 3; i < lst.size(); i++) noteText.append(" ").append(lst.get(i));
+                        sendMsg(id_user, noteText + "");
+                        sendMsg(message, "Сообщение доставлено");
+                        break;
+                    }
+                    else sendMsg(message, "Сообщение не должно быть пустым");
+                }
+                else sendMsg(message, "Эм, не понял");
                 break;
             default:
                 sendMsg(message, "Эм, не понял");
@@ -132,8 +158,20 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
+    public void sendMsg(String chatId, String text) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.enableMarkdown(true);
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(text);
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void sendMsg(Message message, List<Textable> lessons) {
-        if ("!".equals(lessons.get(0).safeTextForm().substring(0,1))) {
+        if ("!".equals(lessons.get(0).safeTextForm().substring(0, 1))) {
             sendMsg(message, lessons.get(0).safeTextForm().substring(1));
             return;
         }
@@ -174,6 +212,15 @@ public class Bot extends TelegramLongPollingBot {
         else str += " дней";
         return str;
 
+    }
+
+    public static Expression randomExpression() {
+        Random random = new Random();
+        int i = random.nextInt(3);
+        System.out.println(i);
+        if (i == 0) return new Advice();
+        else if (i == 1) return new Quote();
+        else return new Fact();
     }
 
 }
