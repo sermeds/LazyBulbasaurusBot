@@ -3,6 +3,7 @@ package Bot;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -80,6 +81,9 @@ public class Bot extends TelegramLongPollingBot {
                     throw new RuntimeException(e);
                 }
                 break;
+            case ("мем"):
+                sendImage(message);
+                break;
             case ("стипендия"):
             case ("стипуха"):
                 sendMsg(message, Icon.DOLLAR.get() + " До стипендии осталось " + scholarship() + ' ' + Icon.DOLLAR.get());
@@ -87,6 +91,17 @@ public class Bot extends TelegramLongPollingBot {
             default:
                 sendMsg(message, "Эм, не понял");
                 break;
+        }
+    }
+
+    public void sendImage(Message message){
+        SendPhoto sendPhoto = new SendPhoto();
+        sendPhoto.setChatId(message.getChatId().toString());
+        try {
+            sendPhoto.setPhoto(ImgParser.imageParser());
+            execute(sendPhoto);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
         }
     }
 
