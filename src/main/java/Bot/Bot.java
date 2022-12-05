@@ -46,6 +46,7 @@ public class Bot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         message = update.getMessage();
+        System.out.println(message.getText());
         if (message != null && message.hasText()) registerMessage();
     }
 
@@ -83,6 +84,35 @@ public class Bot extends TelegramLongPollingBot {
             case ("стипендия"):
             case ("стипуха"):
                 sendMsg(message, Icon.DOLLAR.get() + " До стипендии осталось " + scholarship() + ' ' + Icon.DOLLAR.get());
+                break;
+            case ("заметка"):
+                sendMsg(message,  new Notes().getNote(message.getChatId()) + "");
+                break;
+            case ("создать"):
+                if(lst.size() > 1 && lst.get(1).equals("заметку")) {
+                    if(lst.size() > 2) {
+                        StringBuilder noteText = new StringBuilder(lst.get(2));
+                        for (int i = 3; i < lst.size(); i++) noteText.append(" ").append(lst.get(i));
+                        sendMsg(message, new Notes().createNote(message.getChatId(), noteText.toString()) + "");
+                        break;
+                    }
+                    else sendMsg(message, "Заметка не может быть пустой");
+                }
+                else sendMsg(message, "Эм, не понял");
+                break;
+            case ("удалить"):
+                if(lst.size() > 1 && lst.get(1).equals("заметку"))
+                    sendMsg(message,  new Notes().removeNote(message.getChatId()) + "");
+                else sendMsg(message, "Эм, не понял");
+                break;
+            case ("совет"):
+                sendMsg(message,  new Advice().send() + "");
+                break;
+            case ("цитата"):
+                sendMsg(message, new Quote().send() + "");
+                break;
+            case ("факт"):
+                sendMsg(message, new Fact().send() + "");
                 break;
             default:
                 sendMsg(message, "Эм, не понял");
