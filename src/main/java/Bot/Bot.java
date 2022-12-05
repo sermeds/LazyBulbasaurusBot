@@ -4,6 +4,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -98,7 +99,8 @@ public class Bot extends TelegramLongPollingBot {
         SendPhoto sendPhoto = new SendPhoto();
         sendPhoto.setChatId(message.getChatId().toString());
         try {
-            sendPhoto.setPhoto(ImgParser.imageParser());
+//            sendPhoto.setPhoto(ImgParser.imageParser());
+            sendPhoto.setPhoto(new InputFile("src/main/resources/test4.jpeg"));
             execute(sendPhoto);
         } catch (TelegramApiException e) {
             e.printStackTrace();

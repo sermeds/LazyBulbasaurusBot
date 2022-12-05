@@ -1,5 +1,6 @@
 package Bot;
 
+import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -9,22 +10,22 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 public class ImgParser {
-    public static InputFile imageParser(){
+    public static InputFile imageParser() {
         Document document;
-        File file;
+        File file = null;
 
         try {
             document = Jsoup.connect("https://www.reddit.com/r/memes/").get();
             Elements img = document.getElementsByClass("_2_tDEnGMLxpM6uOa2kaDB3");
-
+//            FileUtils.copy
+            File file1 = new File("src/main/resources/test3.jpeg");
             try (InputStream in = new URL(img.first().attr("src")).openStream()) {
-                Files.copy(in, Paths.get("D:\\MemeParser"));
-                return new InputFile("D:\\MemeParser");
+                FileUtils.copyURLToFile(new URL(img.first().attr("src")), file1);
+                return new InputFile("src/main/resources/test3.jpeg");
             } catch (IOException e) {
+                System.out.println("Сукаааа, опять тупой копи не сработал");
                 e.printStackTrace();
             }
         } catch (IOException e) {
