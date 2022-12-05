@@ -85,6 +85,26 @@ public class Bot extends TelegramLongPollingBot {
             case ("стипуха"):
                 sendMsg(message, Icon.DOLLAR.get() + " До стипендии осталось " + scholarship() + ' ' + Icon.DOLLAR.get());
                 break;
+            case ("заметка"):
+                sendMsg(message,  new Notes().getNote(message.getChatId()) + "");
+                break;
+            case ("создать"):
+                if(lst.size() > 1 && lst.get(1).equals("заметку")) {
+                    if(lst.size() > 2) {
+                        String noteText = lst.get(2);
+                        for (int i = 3; i < lst.size(); i++) noteText += " " + lst.get(i);
+                        sendMsg(message, new Notes().createNote(message.getChatId(), noteText) + "");
+                        break;
+                    }
+                    else sendMsg(message, "Заметка не может быть пустой");
+                }
+                else sendMsg(message, "Эм, не понял");
+                break;
+            case ("удалить"):
+                if(lst.size() > 1 && lst.get(1).equals("заметку"))
+                    sendMsg(message,  new Notes().removeNote(message.getChatId()) + "");
+                else sendMsg(message, "Эм, не понял");
+                break;
             case ("совет"):
                 sendMsg(message,  new Advice().send() + "");
                 break;
@@ -93,15 +113,6 @@ public class Bot extends TelegramLongPollingBot {
                 break;
             case ("факт"):
                 sendMsg(message, new Fact().send() + "");
-                break;
-            case ("создать_заметку"):
-                sendMsg(message,  new Notes().createNote(message.getChatId(),"Иди учись!") + "");
-                break;
-            case ("заметка"):
-                sendMsg(message,  new Notes().getNote(message.getChatId()) + "");
-                break;
-            case ("удалить_заметку"):
-                sendMsg(message,  new Notes().removeNote(message.getChatId()) + "");
                 break;
             default:
                 sendMsg(message, "Эм, не понял");
