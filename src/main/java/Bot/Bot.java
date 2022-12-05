@@ -91,9 +91,9 @@ public class Bot extends TelegramLongPollingBot {
             case ("создать"):
                 if(lst.size() > 1 && lst.get(1).equals("заметку")) {
                     if(lst.size() > 2) {
-                        String noteText = lst.get(2);
-                        for (int i = 3; i < lst.size(); i++) noteText += " " + lst.get(i);
-                        sendMsg(message, new Notes().createNote(message.getChatId(), noteText) + "");
+                        StringBuilder noteText = new StringBuilder(lst.get(2));
+                        for (int i = 3; i < lst.size(); i++) noteText.append(" ").append(lst.get(i));
+                        sendMsg(message, new Notes().createNote(message.getChatId(), noteText.toString()) + "");
                         break;
                     }
                     else sendMsg(message, "Заметка не может быть пустой");
