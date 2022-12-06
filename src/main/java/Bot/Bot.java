@@ -1,10 +1,14 @@
 package Bot;
 
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import  org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
@@ -30,6 +34,7 @@ public class Bot extends TelegramLongPollingBot {
             e.printStackTrace();
         }
     }
+
 
     @Override
     public String getBotUsername() {
@@ -135,10 +140,8 @@ public class Bot extends TelegramLongPollingBot {
                         sendMsg(id_user, noteText + "");
                         sendMsg(message, "Сообщение доставлено");
                         break;
-                    }
-                    else sendMsg(message, "Сообщение не должно быть пустым");
-                }
-                else sendMsg(message, "Эм, не понял");
+                    } else sendMsg(message, "Сообщение не должно быть пустым");
+                } else sendMsg(message, "Эм, не понял");
                 break;
             default:
                 sendMsg(message, "Эм, не понял");
@@ -151,6 +154,7 @@ public class Bot extends TelegramLongPollingBot {
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(message.getChatId().toString());
         sendMessage.setText(text);
+        ReplyKeyboardMarkup replyKeyboardMarkup = setButtons(sendMessage);
         try {
             execute(sendMessage);
         } catch (TelegramApiException e) {
@@ -221,6 +225,38 @@ public class Bot extends TelegramLongPollingBot {
         if (i == 0) return new Advice();
         else if (i == 1) return new Quote();
         else return new Fact();
+    }
+
+    public ReplyKeyboardMarkup setButtons(SendMessage sendMessage){
+
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        sendMessage.setReplyMarkup(replyKeyboardMarkup);
+        replyKeyboardMarkup.setSelective(true);
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        replyKeyboardMarkup.setOneTimeKeyboard(false);
+
+        List<KeyboardRow> keyboard = new ArrayList<>();
+
+        KeyboardRow keyboardRow1 = new KeyboardRow();
+        KeyboardRow keyboardRow2 = new KeyboardRow();
+        KeyboardRow keyboardRow3 = new KeyboardRow();
+        keyboardRow1.add("расписание");
+        keyboardRow1.add("анекдот");
+        keyboardRow1.add("погода");
+        keyboardRow1.add("стипендия");
+        keyboardRow2.add("заметка");
+        keyboardRow2.add("создать");
+        keyboardRow2.add("удалить");
+        keyboardRow2.add("выражение");
+        keyboardRow3.add("совет");
+        keyboardRow3.add("цитата");
+        keyboardRow3.add("факт");
+        keyboard.add(keyboardRow1);
+        keyboard.add(keyboardRow2);
+        keyboard.add(keyboardRow3);
+        replyKeyboardMarkup.setKeyboard(keyboard);
+
+        return replyKeyboardMarkup;
     }
 
 }
