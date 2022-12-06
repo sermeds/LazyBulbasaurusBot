@@ -3,6 +3,9 @@ package Bot;
 import  org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -20,11 +23,14 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static Bot.Anecdotes.sayJoke;
+import static Bot.InlineKeyboardRPS.getInlineKeyboardRPS;
 import static Bot.Parser.parse;
+import static Bot.RockPaperScissors.play;
 
 public class Bot extends TelegramLongPollingBot {
     private boolean groupMessage = false;
     private Message message;
+    private SendMessage sendMessageLog;
 
     public static void main(String[] args) {
         try {
@@ -48,9 +54,28 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
+        if (update.hasCallbackQuery()){
+            CallbackQuery query = update.getCallbackQuery();
+            EditMessageText new_mes = new EditMessageText();
+            new_mes.setChatId(query.getMessage().getChatId());
+            new_mes.setMessageId(query.getMessage().getMessageId());
+            new_mes.setText(query.getMessage().getText());
+            try {
+                execute(new_mes);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+            registerCallbackQuery(query);
+            return;
+        }
         message = update.getMessage();
-        System.out.println(message.getText());
         if (message != null && message.hasText()) registerMessage();
+    }
+
+    public void registerCallbackQuery(CallbackQuery query) {
+        if (query.getData().equals("rock") || query.getData().equals("scissors") || query.getData().equals("paper")) {
+            play(query, this);
+        }
     }
 
     public void registerMessage() {
@@ -143,9 +168,25 @@ public class Bot extends TelegramLongPollingBot {
                     } else sendMsg(message, "Сообщение не должно быть пустым");
                 } else sendMsg(message, "Эм, не понял");
                 break;
+            case ("кмн"):
+                sendMsg(message, "Сыграем в камень, ножницы, бумага?", getInlineKeyboardRPS());
+                break;
             default:
                 sendMsg(message, "Эм, не понял");
                 break;
+        }
+    }
+    public void sendMsg(Message message, String text, InlineKeyboardMarkup keyboardMarkup) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.enableMarkdown(true);
+        sendMessage.setChatId(message.getChatId().toString());
+        sendMessage.setText(text);
+        sendMessage.setReplyMarkup(keyboardMarkup);
+        sendMessageLog = sendMessage;
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
         }
     }
 
