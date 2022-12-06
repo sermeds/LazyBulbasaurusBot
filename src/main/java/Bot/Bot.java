@@ -3,6 +3,8 @@ package Bot;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -50,7 +52,15 @@ public class Bot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         if (update.hasCallbackQuery()){
             CallbackQuery query = update.getCallbackQuery();
-
+            EditMessageText new_mes = new EditMessageText();
+            new_mes.setChatId(query.getMessage().getChatId());
+            new_mes.setMessageId(query.getMessage().getMessageId());
+            new_mes.setText(query.getMessage().getText());
+            try {
+                execute(new_mes);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
             registerCallbackQuery(query);
             return;
         }
