@@ -3,6 +3,8 @@ package Bot;
 import  org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -14,7 +16,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
-
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -109,6 +111,11 @@ public class Bot extends TelegramLongPollingBot {
                     throw new RuntimeException(e);
                 }
                 break;
+            case ("мем"):
+//                sendImage("https://fikiwiki.com/uploads/posts/2022-02/1644965605_9-fikiwiki-com-p-kartinki-priroda-na-zastavku-telefona-9.jpg" ,message.getChatId().toString());
+//                sendImage("src/main/resources/test4.jpeg",message.getChatId().toString());
+                sendImage(message);
+                break;
             case ("стипендия"):
             case ("стипуха"):
                 sendMsg(message, Icon.DOLLAR.get() + " До стипендии осталось " + scholarship() + ' ' + Icon.DOLLAR.get());
@@ -185,6 +192,48 @@ public class Bot extends TelegramLongPollingBot {
         sendMessageLog = sendMessage;
         try {
             execute(sendMessage);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+//    public void sendImage(String url, String chatId) {
+//        // Create send method
+//        SendPhoto sendPhotoRequest = new SendPhoto();
+//        // Set destination chat id
+//        sendPhotoRequest.setChatId(chatId);
+//        // Set the photo url as a simple photo
+//        sendPhotoRequest.setPhoto(new InputFile(url));
+//        try {
+//            // Execute the method
+//            execute(sendPhotoRequest);
+//        } catch (TelegramApiException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+    public void sendImage(String filePath, String chatId) {
+        // Create send method
+        SendPhoto sendPhotoRequest = new SendPhoto();
+        // Set destination chat id
+        sendPhotoRequest.setChatId(chatId);
+        // Set the photo file as a new photo (You can also use InputStream with a constructor overload)
+        sendPhotoRequest.setPhoto(new InputFile(new File(filePath)));
+        try {
+            // Execute the method
+            execute(sendPhotoRequest);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendImage(Message message){
+        SendPhoto sendPhoto = new SendPhoto();
+        sendPhoto.setChatId(message.getChatId().toString());
+        try {
+            sendPhoto.setPhoto(ImgParser.imageParser());
+//            sendPhoto.setPhoto(new InputFile(("src/main/resources/test4.jpeg")));
+            execute(sendPhoto);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
