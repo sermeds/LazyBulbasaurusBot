@@ -18,7 +18,10 @@ public enum Icon {
     SUN(":sunny:"),
     DROP(":droplet:"),
     CALENDAR(":calendar:"),
-    DOLLAR(":dollar:");
+    DOLLAR(":dollar:"),
+    ROCK(":fist:"),
+    PAPER(":raised_hand:"),
+    SCISSORS(":v:");
 
     private String value;
 
