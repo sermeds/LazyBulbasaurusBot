@@ -1,32 +1,38 @@
 package Bot;
 
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import  org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
-
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 import static Bot.Anecdotes.sayJoke;
+import static Bot.InlineKeyboardRPS.getInlineKeyboardRPS;
 import static Bot.Parser.parse;
+import static Bot.RockPaperScissors.play;
 
 public class Bot extends TelegramLongPollingBot {
     private boolean groupMessage = false;
     private Message message;
+    private SendMessage sendMessageLog;
 
     public static void main(String[] args) {
         try {
@@ -36,6 +42,7 @@ public class Bot extends TelegramLongPollingBot {
             e.printStackTrace();
         }
     }
+
 
     @Override
     public String getBotUsername() {
@@ -49,8 +56,28 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
+        if (update.hasCallbackQuery()){
+            CallbackQuery query = update.getCallbackQuery();
+            EditMessageText new_mes = new EditMessageText();
+            new_mes.setChatId(query.getMessage().getChatId());
+            new_mes.setMessageId(query.getMessage().getMessageId());
+            new_mes.setText(query.getMessage().getText());
+            try {
+                execute(new_mes);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+            registerCallbackQuery(query);
+            return;
+        }
         message = update.getMessage();
         if (message != null && message.hasText()) registerMessage();
+    }
+
+    public void registerCallbackQuery(CallbackQuery query) {
+        if (query.getData().equals("rock") || query.getData().equals("scissors") || query.getData().equals("paper")) {
+            play(query, this);
+        }
     }
 
     public void registerMessage() {
@@ -93,9 +120,80 @@ public class Bot extends TelegramLongPollingBot {
             case ("стипуха"):
                 sendMsg(message, Icon.DOLLAR.get() + " До стипендии осталось " + scholarship() + ' ' + Icon.DOLLAR.get());
                 break;
+            case ("заметка"):
+                sendMsg(message, new Notes().getNote(message.getChatId()) + "");
+                break;
+            case ("создать"):
+                if (lst.size() > 1 && lst.get(1).equals("заметку")) {
+                    if (lst.size() > 2) {
+                        StringBuilder noteText = new StringBuilder(lst.get(2));
+                        for (int i = 3; i < lst.size(); i++) noteText.append(" ").append(lst.get(i));
+                        sendMsg(message, new Notes().createNote(message.getChatId(), noteText.toString()) + "");
+                        break;
+                    } else sendMsg(message, "Заметка не может быть пустой");
+                } else sendMsg(message, "Эм, не понял");
+                break;
+            case ("удалить"):
+                if (lst.size() > 1 && lst.get(1).equals("заметку"))
+                    sendMsg(message, new Notes().removeNote(message.getChatId()) + "");
+                else sendMsg(message, "Эм, не понял");
+                break;
+            case ("выражение"):
+                Expression expression = randomExpression();
+                sendMsg(message, expression.send() + "");
+                break;
+            case ("совет"):
+                sendMsg(message, new Advice().send() + "");
+                break;
+            case ("цитата"):
+                sendMsg(message, new Quote().send() + "");
+                break;
+            case ("факт"):
+                System.out.println(message.getFrom().getId());
+                sendMsg(message, new Fact().send() + "");
+                break;
+            case ("/report"):
+                if (lst.size() > 1) {
+                    StringBuilder noteText = new StringBuilder(lst.get(1));
+                    for (int i = 2; i < lst.size(); i++) noteText.append(" ").append(lst.get(i));
+                    sendMsg("1984385382", noteText + "");
+                    sendMsg("841196670", noteText + "");
+                    sendMsg("456755500", noteText + "");
+                    sendMsg(message, "Репорт доставлен");
+                    break;
+                } else sendMsg(message, "Жалоба не может быть пустой");
+                break;
+            case ("/pm"):
+                if (lst.size() > 1) {
+                    String id_user = lst.get(1);
+                    if (lst.size() > 2) {
+                        StringBuilder noteText = new StringBuilder(lst.get(2));
+                        for (int i = 3; i < lst.size(); i++) noteText.append(" ").append(lst.get(i));
+                        sendMsg(id_user, noteText + "");
+                        sendMsg(message, "Сообщение доставлено");
+                        break;
+                    } else sendMsg(message, "Сообщение не должно быть пустым");
+                } else sendMsg(message, "Эм, не понял");
+                break;
+            case ("кмн"):
+                sendMsg(message, "Сыграем в камень, ножницы, бумага?", getInlineKeyboardRPS());
+                break;
             default:
                 sendMsg(message, "Эм, не понял");
                 break;
+        }
+    }
+    public void sendMsg(Message message, String text, InlineKeyboardMarkup keyboardMarkup) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.enableMarkdown(true);
+        sendMessage.setChatId(message.getChatId().toString());
+        sendMessage.setText(text);
+        sendMessage.setReplyMarkup(keyboardMarkup);
+        sendMessageLog = sendMessage;
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
         }
     }
 
@@ -146,6 +244,19 @@ public class Bot extends TelegramLongPollingBot {
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(message.getChatId().toString());
         sendMessage.setText(text);
+        ReplyKeyboardMarkup replyKeyboardMarkup = setButtons(sendMessage);
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendMsg(String chatId, String text) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.enableMarkdown(true);
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(text);
         try {
             execute(sendMessage);
         } catch (TelegramApiException e) {
@@ -154,7 +265,7 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     public void sendMsg(Message message, List<Textable> lessons) {
-        if ("!".equals(lessons.get(0).safeTextForm().substring(0,1))) {
+        if ("!".equals(lessons.get(0).safeTextForm().substring(0, 1))) {
             sendMsg(message, lessons.get(0).safeTextForm().substring(1));
             return;
         }
@@ -195,6 +306,47 @@ public class Bot extends TelegramLongPollingBot {
         else str += " дней";
         return str;
 
+    }
+
+    public static Expression randomExpression() {
+        Random random = new Random();
+        int i = random.nextInt(3);
+        System.out.println(i);
+        if (i == 0) return new Advice();
+        else if (i == 1) return new Quote();
+        else return new Fact();
+    }
+
+    public ReplyKeyboardMarkup setButtons(SendMessage sendMessage){
+
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        sendMessage.setReplyMarkup(replyKeyboardMarkup);
+        replyKeyboardMarkup.setSelective(true);
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        replyKeyboardMarkup.setOneTimeKeyboard(false);
+
+        List<KeyboardRow> keyboard = new ArrayList<>();
+
+        KeyboardRow keyboardRow1 = new KeyboardRow();
+        KeyboardRow keyboardRow2 = new KeyboardRow();
+        KeyboardRow keyboardRow3 = new KeyboardRow();
+        keyboardRow1.add("расписание");
+        keyboardRow1.add("анекдот");
+        keyboardRow1.add("погода");
+        keyboardRow1.add("стипендия");
+        keyboardRow2.add("заметка");
+        keyboardRow2.add("создать");
+        keyboardRow2.add("удалить");
+        keyboardRow2.add("выражение");
+        keyboardRow3.add("совет");
+        keyboardRow3.add("цитата");
+        keyboardRow3.add("факт");
+        keyboard.add(keyboardRow1);
+        keyboard.add(keyboardRow2);
+        keyboard.add(keyboardRow3);
+        replyKeyboardMarkup.setKeyboard(keyboard);
+
+        return replyKeyboardMarkup;
     }
 
 }
