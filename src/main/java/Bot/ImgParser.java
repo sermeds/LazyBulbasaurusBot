@@ -4,6 +4,10 @@ import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 
 import java.io.File;
@@ -13,26 +17,12 @@ import java.net.URL;
 
 public class ImgParser {
     public static InputFile imageParser() {
-        Document document;
-        File file = null;
-
-        try {
-            document = Jsoup.connect("https://www.reddit.com/r/memes/").get();
-            Elements img = document.getElementsByClass("_2_tDEnGMLxpM6uOa2kaDB3");
-//            FileUtils.copy
-            File file1 = new File("src/main/resources/test3.jpeg");
-            try (InputStream in = new URL(img.first().attr("src")).openStream()) {
-                FileUtils.copyURLToFile(new URL(img.first().attr("src")), file1);
-                return new InputFile(file1);
-            } catch (IOException e) {
-                System.out.println("Сукаааа, опять тупой копи не сработал");
-                e.printStackTrace();
-            }
-        } catch (IOException e) {
-            System.out.println("Image not found...");
-            e.printStackTrace();
-        }
-
-        return null;
+        System.setProperty("webdriver.chrome.driver","selenium\\chromedriver.exe");
+        WebDriver webDriver = new ChromeDriver();
+        webDriver.get("https://www.generatormix.com/random-memes");
+        WebElement img = webDriver.findElement(By.className("aspect-square-contain"));
+        String src = img.getAttribute("src");
+        webDriver.quit();
+        return new InputFile(src);
     }
 }

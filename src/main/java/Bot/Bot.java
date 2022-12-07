@@ -1,6 +1,6 @@
 package Bot;
 
-import  org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
@@ -16,8 +16,10 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
+
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -56,7 +58,7 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        if (update.hasCallbackQuery()){
+        if (update.hasCallbackQuery()) {
             CallbackQuery query = update.getCallbackQuery();
             EditMessageText new_mes = new EditMessageText();
             new_mes.setChatId(query.getMessage().getChatId());
@@ -95,12 +97,12 @@ public class Bot extends TelegramLongPollingBot {
                 sendMsg(message, "Привествую");
                 break;
             case ("расписание"):
-                if (lst.size() > 1) sendMsg(message, parse(lst.get(1)));
-                else {
-                    sendMsg(message, "Расписание какой группы хотите увидеть?");
-                    groupMessage = true;
-                }
-                break;
+                if (lst.size() > 1) sendMsg(message, parse(lst.get(1), (lst.size() > 2 ? lst.get(2) : null)));
+                else{
+                sendMsg(message, "Расписание какой группы хотите увидеть?");
+                groupMessage = true;
+            }
+            break;
             case ("анекдот"):
                 sendMsg(message, sayJoke());
                 break;
@@ -112,8 +114,6 @@ public class Bot extends TelegramLongPollingBot {
                 }
                 break;
             case ("мем"):
-//                sendImage("https://fikiwiki.com/uploads/posts/2022-02/1644965605_9-fikiwiki-com-p-kartinki-priroda-na-zastavku-telefona-9.jpg" ,message.getChatId().toString());
-//                sendImage("src/main/resources/test4.jpeg",message.getChatId().toString());
                 sendImage(message);
                 break;
             case ("стипендия"):
@@ -149,7 +149,6 @@ public class Bot extends TelegramLongPollingBot {
                 sendMsg(message, new Quote().send() + "");
                 break;
             case ("факт"):
-                System.out.println(message.getFrom().getId());
                 sendMsg(message, new Fact().send() + "");
                 break;
             case ("/report"):
@@ -183,6 +182,7 @@ public class Bot extends TelegramLongPollingBot {
                 break;
         }
     }
+
     public void sendMsg(Message message, String text, InlineKeyboardMarkup keyboardMarkup) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
@@ -197,42 +197,22 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
-//    public void sendImage(String url, String chatId) {
-//        // Create send method
-//        SendPhoto sendPhotoRequest = new SendPhoto();
-//        // Set destination chat id
-//        sendPhotoRequest.setChatId(chatId);
-//        // Set the photo url as a simple photo
-//        sendPhotoRequest.setPhoto(new InputFile(url));
-//        try {
-//            // Execute the method
-//            execute(sendPhotoRequest);
-//        } catch (TelegramApiException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     public void sendImage(String filePath, String chatId) {
-        // Create send method
         SendPhoto sendPhotoRequest = new SendPhoto();
-        // Set destination chat id
         sendPhotoRequest.setChatId(chatId);
-        // Set the photo file as a new photo (You can also use InputStream with a constructor overload)
         sendPhotoRequest.setPhoto(new InputFile(new File(filePath)));
         try {
-            // Execute the method
             execute(sendPhotoRequest);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
     }
 
-    public void sendImage(Message message){
+    public void sendImage(Message message) {
         SendPhoto sendPhoto = new SendPhoto();
         sendPhoto.setChatId(message.getChatId().toString());
         try {
             sendPhoto.setPhoto(ImgParser.imageParser());
-//            sendPhoto.setPhoto(new InputFile(("src/main/resources/test4.jpeg")));
             execute(sendPhoto);
         } catch (TelegramApiException e) {
             e.printStackTrace();
@@ -269,14 +249,10 @@ public class Bot extends TelegramLongPollingBot {
             sendMsg(message, lessons.get(0).safeTextForm().substring(1));
             return;
         }
-        String str = LocalDateTime.now().getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("ru", "RU"));
-        String str2 = Icon.CALENDAR.get() + ' ' + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM")) + ' ' + str.substring(0, 1).toUpperCase() + str.substring(1);
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(message.getChatId().toString());
         try {
-            sendMessage.setText(str2);
-            execute(sendMessage);
             if (lessons.size() == 0) {
                 sendMsg(message, "Сегодня у вас выходной");
                 return;
@@ -317,7 +293,7 @@ public class Bot extends TelegramLongPollingBot {
         else return new Fact();
     }
 
-    public ReplyKeyboardMarkup setButtons(SendMessage sendMessage){
+    public ReplyKeyboardMarkup setButtons(SendMessage sendMessage) {
 
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         sendMessage.setReplyMarkup(replyKeyboardMarkup);

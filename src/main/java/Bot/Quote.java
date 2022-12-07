@@ -9,18 +9,13 @@ import org.openqa.selenium.chrome.ChromeDriver;
 public class Quote extends Expression {
 
     public String create() {
-        System.setProperty("webdriver.chrome.driver","selenium\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "selenium\\chromedriver.exe");
         WebDriver webDriver = new ChromeDriver();
         webDriver.get("https://randstuff.ru/saying/");
         text = null;
-        try {
-            WebElement quote = webDriver.findElement(By.xpath("//*[@id=\"saying\"]/table/tbody/tr/td"));
-            text = quote.getText();
-            webDriver.quit();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        WebElement quote = webDriver.findElement(By.xpath("//*[@id=\"saying\"]/table/tbody/tr/td"));
+        text = quote.getText();
+        webDriver.quit();
         return text;
     }
 

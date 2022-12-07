@@ -4,13 +4,25 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Parser {
-    public static List<Textable> parse(String nameGroup) {
+    public static List<Textable> parse(String nameGroup, String date) {
+        if (date == null) date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM"));
         Document doc1 = null;
         List<Textable> lessons = new ArrayList<>();
         try {
@@ -22,16 +34,22 @@ public class Parser {
                     url = el.child(0).absUrl("href");
                 }
             }
-            if (url == null){
-                lessons.add(()->"!Группа не найдена");
+            if (url == null) {
+                lessons.add(0, () -> "!Группа не найдена");
                 return lessons;
             }
             Document doc2 = Jsoup.connect(url).get();
-            Elements element = doc2.getElementsByClass("day-current");
+            Elements element = null;
+            element = doc2.getElementsContainingOwnText(date).parents().parents();
             if (element.size() == 0) {
-                lessons.add(()->"!Расписание не найдено");
+                lessons.add(0, () -> "!Расписание не найдено");
                 return lessons;
             }
+            System.out.println("1");
+            String str = LocalDate.parse(date+".22", DateTimeFormatter.ofPattern("dd.MM.yy")).getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("ru", "RU"));
+            String str2 = Icon.CALENDAR.get() + ' ' + date + ' ' + str.substring(0, 1).toUpperCase() + str.substring(1);
+            lessons.add(() -> str2);
+            System.out.println("2");
             Element el = null;
             for (int i = 1; i <= element.first().childrenSize() - 1; i++) {
                 el = element.first().child(i);
