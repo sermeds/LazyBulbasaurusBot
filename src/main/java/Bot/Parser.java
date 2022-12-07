@@ -45,11 +45,9 @@ public class Parser {
                 lessons.add(0, () -> "!Расписание не найдено");
                 return lessons;
             }
-            System.out.println("1");
             String str = LocalDate.parse(date+".22", DateTimeFormatter.ofPattern("dd.MM.yy")).getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("ru", "RU"));
             String str2 = Icon.CALENDAR.get() + ' ' + date + ' ' + str.substring(0, 1).toUpperCase() + str.substring(1);
             lessons.add(() -> str2);
-            System.out.println("2");
             Element el = null;
             for (int i = 1; i <= element.first().childrenSize() - 1; i++) {
                 el = element.first().child(i);

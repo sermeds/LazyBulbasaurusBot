@@ -253,7 +253,9 @@ public class Bot extends TelegramLongPollingBot {
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(message.getChatId().toString());
         try {
-            if (lessons.size() == 0) {
+            if (lessons.size() == 1) {
+                sendMessage.setText(lessons.get(0).safeTextForm());
+                execute(sendMessage);
                 sendMsg(message, "Сегодня у вас выходной");
                 return;
             }
