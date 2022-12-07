@@ -308,6 +308,7 @@ public class Bot extends TelegramLongPollingBot {
         KeyboardRow keyboardRow1 = new KeyboardRow();
         KeyboardRow keyboardRow2 = new KeyboardRow();
         KeyboardRow keyboardRow3 = new KeyboardRow();
+        KeyboardRow keyboardRow4 = new KeyboardRow();
         keyboardRow1.add("расписание");
         keyboardRow1.add("анекдот");
         keyboardRow1.add("погода");
@@ -319,9 +320,12 @@ public class Bot extends TelegramLongPollingBot {
         keyboardRow3.add("совет");
         keyboardRow3.add("цитата");
         keyboardRow3.add("факт");
+        keyboardRow4.add("мем");
+        keyboardRow4.add("кмн");
         keyboard.add(keyboardRow1);
         keyboard.add(keyboardRow2);
         keyboard.add(keyboardRow3);
+        keyboard.add(keyboardRow4);
         replyKeyboardMarkup.setKeyboard(keyboard);
 
         return replyKeyboardMarkup;
