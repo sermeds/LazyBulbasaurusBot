@@ -283,7 +283,6 @@ public class Bot extends TelegramLongPollingBot {
         else if ((diff % 10 == 2 || diff % 10 == 3 || diff % 10 == 4) && (diff % 100 != 1)) str += " дня";
         else str += " дней";
         return str;
-
     }
 
     public static Expression randomExpression() {
@@ -314,8 +313,6 @@ public class Bot extends TelegramLongPollingBot {
         keyboardRow1.add("погода");
         keyboardRow1.add("стипендия");
         keyboardRow2.add("заметка");
-        keyboardRow2.add("создать");
-        keyboardRow2.add("удалить");
         keyboardRow2.add("выражение");
         keyboardRow3.add("совет");
         keyboardRow3.add("цитата");
