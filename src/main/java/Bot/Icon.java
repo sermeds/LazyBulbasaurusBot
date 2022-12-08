@@ -21,7 +21,11 @@ public enum Icon {
     DOLLAR(":dollar:"),
     ROCK(":fist:"),
     PAPER(":raised_hand:"),
-    SCISSORS(":v:");
+    SCISSORS(":v:"),
+    COMPUTER(":computer:"),
+    BOOK(":book:"),
+    SIGN(":exclamation:"),
+    DOUBLE(":bangbang:");
 
     private String value;
 

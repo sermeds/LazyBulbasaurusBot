@@ -46,7 +46,7 @@ public class Parser {
                 lessons.add(0, () -> "!Расписание не найдено");
                 return lessons;
             }
-            String str = LocalDate.parse(date+".22", DateTimeFormatter.ofPattern("dd.MM.yy")).getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("ru", "RU"));
+            String str = LocalDate.parse(date + ".22", DateTimeFormatter.ofPattern("dd.MM.yy")).getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("ru", "RU"));
             String str2 = Icon.CALENDAR.get() + ' ' + date + ' ' + str.substring(0, 1).toUpperCase() + str.substring(1);
             lessons.add(() -> str2);
             Element el = null;
@@ -92,7 +92,24 @@ public class Parser {
                 lessons.add(0, () -> "!Экзамены не найдены");
                 return lessons;
             }
-            for (Element e : element.first().children()) lessons.add(e::text);
+            String sign = Icon.BOOK.get();
+            for (Element e : element.first().children()) {
+                if (e.text().equals("Зачеты:")) {
+                    String finalSign = sign;
+                    lessons.add(() -> finalSign + ' ' + e.text());
+                    sign = Icon.SIGN.get();
+                }
+                else if (e.text().equals("Экзамены:")) {
+                    sign = Icon.COMPUTER.get();
+                    String finalSign1 = sign;
+                    lessons.add(() -> finalSign1 + ' ' + e.text());
+                    sign = Icon.DOUBLE.get();
+                }
+                else {
+                    String finalSign2 = sign;
+                    lessons.add(() -> finalSign2 + ' ' + e.text());
+                }
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
