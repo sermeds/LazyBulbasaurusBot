@@ -21,7 +21,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Parser {
-    public static List<Textable> parse(String nameGroup, String date) {
+
+    public static List<Textable> parseRasp(String nameGroup, String date) {
         if (date == null) date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM"));
         Document doc1 = null;
         List<Textable> lessons = new ArrayList<>();
@@ -61,6 +62,37 @@ public class Parser {
                 lesson.setTeacher(el.child(0).getElementsByClass("lesson-teacher").text());
                 lessons.add(lesson);
             }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return lessons;
+    }
+
+    public static List<Textable> parseExams(String nameGroup) {
+        Document doc1 = null;
+        List<Textable> lessons = new ArrayList<>();
+        try {
+            doc1 = Jsoup.connect("https://rasp.sstu.ru/rasp/").get();
+            Elements el1 = doc1.getElementsByClass("group");
+            String url = null;
+            for (Element el : el1) {
+                if (el.text().equalsIgnoreCase(nameGroup)) {
+                    url = el.child(0).absUrl("href");
+                }
+            }
+            if (url == null) {
+                lessons.add(0, () -> "!Группа не найдена");
+                return lessons;
+            }
+            Document doc2 = Jsoup.connect(url).get();
+            Elements element = null;
+            element = doc2.getElementsByClass("lesson-warnings");
+            if (element.size() == 0) {
+                lessons.add(0, () -> "!Экзамены не найдены");
+                return lessons;
+            }
+            for (Element e : element.first().children()) lessons.add(e::text);
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -28,11 +28,13 @@ import java.util.*;
 
 import static Bot.Anecdotes.sayJoke;
 import static Bot.InlineKeyboardRPS.getInlineKeyboardRPS;
-import static Bot.Parser.parse;
+import static Bot.Parser.parseExams;
+import static Bot.Parser.parseRasp;
 import static Bot.RockPaperScissors.play;
 
 public class Bot extends TelegramLongPollingBot {
-    private boolean groupMessage = false;
+    private boolean raspMessage = false;
+    private boolean examMessage = false;
     private Message message;
     private SendMessage sendMessageLog;
 
@@ -85,9 +87,13 @@ public class Bot extends TelegramLongPollingBot {
     public void registerMessage() {
         WeatherModel model = new WeatherModel();
         List<String> lst = new ArrayList<>(Arrays.asList(message.getText().split(" ")));
-        if (groupMessage) {
+        if (raspMessage) {
             lst.add(0, "расписание");
-            groupMessage = false;
+            raspMessage = false;
+        }
+        if (examMessage) {
+            lst.add(0, "экзамены");
+            examMessage = false;
         }
         switch (lst.get(0).toLowerCase(Locale.ROOT)) {
             case (("/help")):
@@ -97,10 +103,10 @@ public class Bot extends TelegramLongPollingBot {
                 sendMsg(message, "Привествую");
                 break;
             case ("расписание"):
-                if (lst.size() > 1) sendMsg(message, parse(lst.get(1), (lst.size() > 2 ? lst.get(2) : null)));
+                if (lst.size() > 1) sendMsg(message, parseRasp(lst.get(1), (lst.size() > 2 ? lst.get(2) : null)));
                 else{
                 sendMsg(message, "Расписание какой группы хотите увидеть?");
-                groupMessage = true;
+                raspMessage = true;
             }
             break;
             case ("анекдот"):
@@ -176,6 +182,11 @@ public class Bot extends TelegramLongPollingBot {
                 break;
             case ("кмн"):
                 sendMsg(message, "Сыграем в камень, ножницы, бумага?", getInlineKeyboardRPS());
+                break;
+            case("экзамены"):
+                if (lst.size() > 1) sendMsg(message, parseExams(lst.get(1)));
+                else sendMsg(message, "Экзамены какой группы хотите увидеть?");
+                examMessage = true;
                 break;
             default:
                 sendMsg(message, "Эм, не понял");
